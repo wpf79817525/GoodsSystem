@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ItemMapper">
+    <resultMap id="itemMap" type="item">
+        <id property="id" column="id"></id>
+        <association property="stock" column="id" select="com.mapper.ItemStockMapper.getStockById"></association>
+    </resultMap>
+    <select id="getPage" resultMap="itemMap">
+        select id,name,image,price,brand,spec from item
+        <where>
+            <if test="it.name!=null">
+                and name like '%${it.name}%'
+            </if>
+            <if test="it.brand!=null">
+                and brand like '%${it.brand}%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getById" resultMap="itemMap" parameterType="long">
+        select id,name,image,price,brand,spec from item where id = #{id}
+    </select>
+
+</mapper>
