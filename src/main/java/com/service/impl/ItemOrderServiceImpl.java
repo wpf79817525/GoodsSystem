@@ -1,7 +1,9 @@
 package com.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.enity.Item;
 import com.enity.ItemOrder;
 import com.enity.ItemStock;
 import com.mapper.ItemOrderMapper;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ItemOrderServiceImpl extends ServiceImpl<ItemOrderMapper, ItemOrder> implements ItemOrderService {
     @Autowired
     private ItemStockService itemStockService;
+    @Autowired
+    private ItemOrderMapper itemOrderMapper;
     @Autowired
     private MysqlIdWorker idWorker;
     @Override
@@ -68,5 +72,45 @@ public class ItemOrderServiceImpl extends ServiceImpl<ItemOrderMapper, ItemOrder
         result.setData(itemOrder.getOrderId());
         result.setMessage("订单创建成功...");
         return result;
+    }
+
+    @Override
+    public Result getWithPage(ItemOrder itemOrder, int currentPage, int pageSize) {
+        Page<ItemOrder> page = new Page<>(currentPage,pageSize);
+        QueryWrapper<ItemOrder> wrapper = new QueryWrapper<>();
+        if (itemOrder.getOrderId() != null)
+            wrapper.eq("order_id",itemOrder.getOrderId());
+        if (itemOrder.getUserPhone() != null)
+            wrapper.eq("user_phone",itemOrder.getUserPhone());
+        if (itemOrder.getItemId() != null)
+            wrapper.eq("item_id",itemOrder.getItemId());
+        itemOrderMapper.selectPage(page,wrapper);
+        if (currentPage > page.getPages())
+        {
+            page.setCurrent(page.getPages());
+            itemOrderMapper.selectPage(page,wrapper);
+        }
+        Result result = new Result();
+        result.setData(page);
+        result.setFlag(true);
+        return result;
+    }
+
+    // TODO 更新订单
+    @Override
+    public Result modifyWithItem(ItemOrder itemOrder) {
+        return null;
+    }
+
+    // TODO 删除订单
+    @Override
+    public Result deleteById(long id) {
+        return null;
+    }
+
+    // TODO 通过订单获取
+    @Override
+    public Result selectById(long id) {
+        return null;
     }
 }

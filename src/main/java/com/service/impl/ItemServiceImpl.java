@@ -23,7 +23,6 @@ public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements It
     ItemStockService itemStockService;
     @Override
     public Result getWithPage(Item item,int currentPage, int pageSize) {
-        System.out.println(item);
         Page<Item> page = new Page<>(currentPage,pageSize);
         itemMapper.getPage(page,item);
         if (currentPage > page.getPages())
