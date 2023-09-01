@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.enity.Item;
 import com.enity.ItemOrder;
 import com.service.ItemOrderService;
 import com.utils.Result;
@@ -28,12 +29,14 @@ public class ItemOrderController {
     }
 
     @PutMapping
-    public Result update(@RequestBody ItemOrder item){
-        return itemOrderService.modifyWithItem(item);
+    public Result update(@RequestBody ItemOrder itemOrder){
+        return itemOrderService.modifyWithItem(itemOrder);
     }
 
     @GetMapping("/{currentPage}/{pageSize}")
     public Result getAll(ItemOrder itemOrder,@PathVariable("currentPage") int currentPage,@PathVariable("pageSize") int pageSize){
+        Item item = itemOrder.getItem();
+        itemOrder.setItem(item == null ? new Item():item);
         Result result = itemOrderService.getWithPage(itemOrder,currentPage,pageSize);
         return result;
     }

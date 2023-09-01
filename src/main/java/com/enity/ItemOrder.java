@@ -6,15 +6,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @TableName("item_order")
 public class ItemOrder {
     @TableId
     private Long orderId;
-    private String userPhone;
-    private Long itemId;
-    private Long itemStock;
+    private String customerPhone;
+    private Item item;
+    private Long buyNum;
     @TableField(exist = false)
-    private LocalDateTime createTime;
+    private Date createTime;
 }

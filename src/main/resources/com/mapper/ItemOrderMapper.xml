@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ItemOrderMapper">
+    <resultMap id="itemOrderMap" type="itemOrder">
+        <id property="orderId" column="order_id"></id>
+        <result property="customerPhone" column="customer_phone"></result>
+        <result property="buyNum" column="buy_num"></result>
+        <result property="createTime" column="create_time"></result>
+        <association
+                property="item"
+                javaType="item"
+                column="item_id"
+                select="com.mapper.ItemMapper.getById">
+        </association>
+    </resultMap>
+    <select id="getPage" resultMap="itemOrderMap">
+        select order_id,customer_phone,item_id,buy_num,create_time from item_order
+        <where>
+            <if test="io.orderId!=null">
+                and order_id = '#{io.orderId}'
+            </if>
+            <if test="io.customerPhone!=null">
+                and customer_phone like '%${io.customerPhone}%'
+            </if>
+            <if test="io.item.id!=null">
+                and item_id like '%${io.item.id}%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getById" resultMap="itemOrderMap" parameterType="long">
+        select order_id,customer_phone,item_id,buy_num from item_order where order_id = #{id}
+    </select>
+
+</mapper>
