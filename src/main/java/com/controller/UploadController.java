@@ -19,7 +19,6 @@ import java.io.IOException;
 public class UploadController {
     @PostMapping("/image")
     public Result uploadImage(@RequestParam("file") MultipartFile image) {
-        System.out.println("======" + image);
         try {
             // 获取原始文件名称
             String originalFilename = image.getOriginalFilename();
