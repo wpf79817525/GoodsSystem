@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -111,5 +112,11 @@ class SpringBootProjectApplicationTests {
         for (ItemOrder itemOrder : page.getRecords()) {
             System.out.println(itemOrder);
         }
+    }
+
+    @Test
+    void contextLoads12() {
+        Date date = new Date();
+        System.out.println(date);
     }
 }
