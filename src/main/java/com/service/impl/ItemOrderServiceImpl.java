@@ -72,8 +72,9 @@ public class ItemOrderServiceImpl extends ServiceImpl<ItemOrderMapper, ItemOrder
             System.out.println(result.getMessage());
             throw new RuntimeException();
         }
-        result.setData(itemOrder.getOrderId());
-        result.setMessage("订单创建成功...");
+        // 这里订单要返回String类型，否则会精度损失
+        result.setData(itemOrder.getOrderId().toString());
+        result.setMessage("订单创建成功");
         return result;
     }
 
@@ -86,31 +87,58 @@ public class ItemOrderServiceImpl extends ServiceImpl<ItemOrderMapper, ItemOrder
             page.setCurrent(page.getPages());
             itemOrderMapper.getPage(page,itemOrder);
         }
-        List<ItemOrder> records = page.getRecords();
-        for (ItemOrder record : records) {
-            System.out.println(record.getOrderId());
-        }
         Result result = new Result();
         result.setData(page);
         result.setFlag(true);
         return result;
     }
 
-    // TODO 变更订单 —— 修改订单时库存是否需要回滚
+    // TODO 变更订单 —— 修改订单时库存是否需要回滚，这里只允许修改联系方式
     @Override
     public Result modifyWithItem(ItemOrder itemOrder) {
-        return null;
+        boolean success = update().setSql("customer_phone = " + itemOrder.getCustomerPhone()).
+                eq("order_id", itemOrder.getOrderId()).
+                update();
+        Result result = new Result();
+        result.setFlag(success);
+        result.setMessage(success ? "订单的顾客联系方式修改成功...":"修改失败...");
+        return result;
     }
 
     // TODO 取消订单 —— 删除订单数据时库存是否需要回滚(这里是需要的)
+    @Transactional
     @Override
     public Result deleteById(long id) {
-        return null;
+        Result re = selectById(id);
+        ItemOrder order = (ItemOrder) re.getData();
+        Result result = new Result();
+        if (order == null)
+        {
+            result.setFlag(false);
+            result.setMessage("无法查询到该订单，该订单可能已被删除...");
+            return result;
+        }
+        Long buyNum = order.getBuyNum();
+        Long itemId = order.getItem().getId();
+        boolean recoverStock = itemStockService.update().setSql("stock = stock + " + buyNum).eq("item_id", itemId).update();
+        boolean successDeleteOrder = removeById(id);
+        boolean success = recoverStock && successDeleteOrder;
+        if (!success)
+        {
+            throw new RuntimeException("订单取消失败...对应的操作状态:\n库存恢复状态:" + recoverStock + "\n订单删除否:" + successDeleteOrder);
+        }
+        result.setFlag(success);
+        result.setMessage("订单取消成功...");
+        return result;
     }
 
     // TODO 通过订单ID获取
     @Override
     public Result selectById(long id) {
-        return null;
+        ItemOrder order = itemOrderMapper.getById(id);
+        Result result = new Result();
+        result.setData(order);
+        result.setFlag(order != null);
+        return result;
     }
 }
