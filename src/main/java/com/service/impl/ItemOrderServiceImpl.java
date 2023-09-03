@@ -31,6 +31,7 @@ public class ItemOrderServiceImpl extends ServiceImpl<ItemOrderMapper, ItemOrder
         // 这里存在线程安全问题，不过反正基本是单线程，为了避免错误解决一下
         // 思路：使用sychronized
         Long itemId = itemOrder.getItem().getId();
+        System.out.println(itemId);
         synchronized (itemId.toString().intern()){
             QueryWrapper<ItemStock> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("item_id",itemId).select("stock");
@@ -59,7 +60,8 @@ public class ItemOrderServiceImpl extends ServiceImpl<ItemOrderMapper, ItemOrder
 //        int a = 1 / 0;
         itemOrder.setOrderId(itemOrderId);
         Result result = new Result();
-        boolean successSave = save(itemOrder);
+        int insertNum = itemOrderMapper.save(itemOrder);
+        boolean successSave = insertNum > 0;
         boolean successReduce = itemStockService.update().setSql("stock = stock - " + itemOrder.getBuyNum()).eq("item_id",itemOrder.getItem().getId()).update();
         boolean success = successSave && successReduce;
         result.setFlag(success);
@@ -94,19 +96,19 @@ public class ItemOrderServiceImpl extends ServiceImpl<ItemOrderMapper, ItemOrder
         return result;
     }
 
-    // TODO 更新订单
+    // TODO 变更订单 —— 修改订单时库存是否需要回滚
     @Override
     public Result modifyWithItem(ItemOrder itemOrder) {
         return null;
     }
 
-    // TODO 删除订单
+    // TODO 取消订单 —— 删除订单数据时库存是否需要回滚(这里是需要的)
     @Override
     public Result deleteById(long id) {
         return null;
     }
 
-    // TODO 通过订单获取
+    // TODO 通过订单ID获取
     @Override
     public Result selectById(long id) {
         return null;

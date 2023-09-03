@@ -33,4 +33,8 @@
         select order_id,customer_phone,item_id,buy_num from item_order where order_id = #{id}
     </select>
 
+    <insert id="save" parameterType="itemOrder">
+        insert into item_order(order_id,customer_phone,item_id,buy_num) values (#{orderId},#{customerPhone},#{item.id},#{buyNum})
+    </insert>
+
 </mapper>

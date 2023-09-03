@@ -106,12 +106,13 @@ class SpringBootProjectApplicationTests {
     @Test
     void contextLoads11(@Autowired ItemOrderService itemOrderService) {
         ItemOrder order = new ItemOrder();
-        order.setItem(new Item());
-        Result result = itemOrderService.getWithPage(order, 1, 2);
-        Page<ItemOrder> page = (Page<ItemOrder>) result.getData();
-        for (ItemOrder itemOrder : page.getRecords()) {
-            System.out.println(itemOrder);
-        }
+        order.setBuyNum(5L);
+        order.setCustomerPhone("18297619314");
+        Item item = new Item();
+        item.setId(2L);
+        order.setItem(item);
+        Result result = itemOrderService.createItemOrder(order);
+        System.out.println(result);
     }
 
     @Test
